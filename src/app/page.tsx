@@ -1,17 +1,16 @@
 import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Image from "next/image";
-import { db } from "~/server/db";
+import { getMyImages } from "~/server/queries";
 
 export const dynamic = "force-dynamic";
 
 async function Images() {
-  const images = await db.query.images.findMany({
-    orderBy: (model, { desc }) => desc(model.id),
-  });
+  const images = await getMyImages();
+
   return (
     <div className="flex flex-wrap gap-4  ">
       {images.map((image) => (
-        <div key={image.id } className="flex h-48 w-48 flex-col ">
+        <div key={image.id} className="flex h-48 w-48 flex-col ">
           <Image
             className="object-cover"
             height={192}
@@ -35,7 +34,7 @@ export default async function HomePage() {
         </div>
       </SignedOut>
       <SignedIn>
-        <Images/>
+        <Images />
       </SignedIn>
     </main>
   );
