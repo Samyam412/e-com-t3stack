@@ -8,15 +8,15 @@ async function Images() {
   const images = await getMyImages();
 
   return (
-    <div className="flex flex-wrap gap-4  ">
+    <div className="flex flex-wrap justify-center gap-4  ">
       {images.map((image) => (
         <div key={image.id} className="flex h-48 w-48 flex-col ">
           <Image
-            className="object-cover"
-            height={192}
-            width={192}
-            alt={image.name}
             src={image.url}
+            style={{ objectFit: "contain" }}
+            width={480}
+            height={480}
+            alt={image.name}
           />
           <div>{image.name}</div>
         </div>
