@@ -1,28 +1,45 @@
-/* eslint-disable @next/next/no-img-element */
 import { clerkClient } from "@clerk/nextjs/server";
-import { getImage } from "~/server/queries";
+import { Button } from "~/components/ui/button";
+import { deleteImage, getImage } from "~/server/queries";
 
-export default async function FullPageImageView(props: { id: number }) {
-  const image = await getImage(props.id);
-  const uploaderInfo = await clerkClient.users.getUser(image.userId);
+export async function FullPageImageView(props: { photoId: string }) {
+  const idAsNumber = Number(props.photoId);
+  if (Number.isNaN(idAsNumber)) throw new Error("Invalid photo id");
+
+  const image = await getImage(idAsNumber);
+
+  const userInfo = await clerkClient.users.getUser(image.userId);
+
   return (
-    <div className="flex size-full min-w-0 ">
-      <div className="flex flex-shrink items-center justify-center">
-        <img
-          src={image.url}
-          alt={image.name}
-          className="w-96  object-contain"
-        />
+    <div className="flex h-full w-screen min-w-0 items-center justify-center text-white">
+      <div className="flex-shrink flex-grow">
+        <img src={image.url} className="object-contain" alt={image.name} />
       </div>
-      <div className="flex w-48 flex-shrink-0 flex-col border-l">
-        <div className="border-b p-2 text-center text-lg">{image.name}</div>
-        <div className="flex flex-col p-2">
-          <span>Uploaded By</span>
-          <span>{uploaderInfo.fullName}</span>
+      <div className="flex h-full w-56 flex-shrink-0 flex-col border-l">
+        <div className="border-b p-2 text-center text-xl">{image.name}</div>
+
+        <div className="p-2">
+          <div>Uploaded By:</div>
+          <div>{userInfo.fullName}</div>
         </div>
-        <div className="flex flex-col p-2">
-          <span>Created at</span>
-          <span>{new Date(image.createdAt).toLocaleDateString()}</span>
+
+        <div className="p-2">
+          <div>Created On:</div>
+          <div>{image.createdAt.toLocaleDateString()}</div>
+        </div>
+
+        <div className="p-2">
+          <form
+            action={async () => {
+              "use server";
+
+              await deleteImage(idAsNumber);
+            }}
+          >
+            <Button type="submit" variant="destructive">
+              Delete
+            </Button>
+          </form>
         </div>
       </div>
     </div>
