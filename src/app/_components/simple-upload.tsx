@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useUploadThing } from "~/utils/uploadthing";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 // inferred input off useUploadThing
 type Input = Parameters<typeof useUploadThing>;
@@ -48,14 +49,52 @@ function UploadSvg() {
   );
 }
 
+function LoadingSpinnerSvg() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      className="spinner_9Mto"
+      fill="white"
+    >
+      <rect
+        className="spinner_9Mto"
+        x="1"
+        y="1"
+        rx="1"
+        width="10"
+        height="10"
+      />
+      <rect
+        className="spinner_9Mto spinner_bb12"
+        x="1"
+        y="1"
+        rx="1"
+        width="10"
+        height="10"
+      />
+    </svg>
+  );
+}
+
+
+
 export function SimpleUpload() {
   const router = useRouter();
+
   const { inputProps } = useUploadThingInputProps("imageUploader", {
     onUploadBegin() {
-      toast("Uplaoding", {
-        duration: 100000,
-        id: "uploading-toast",
-      });
+      toast(
+        <div className="flex items-center gap-2 text-white ">
+          <LoadingSpinnerSvg /> <span className="text-lg">Uploading...</span>
+        </div>,
+        {
+          duration: 100000,
+          id: "uploading-toast",
+        },
+      );
     },
     onClientUploadComplete() {
       toast.dismiss("uploading-toast");
